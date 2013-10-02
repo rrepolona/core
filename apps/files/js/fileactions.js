@@ -71,13 +71,15 @@ var FileActions = {
 		FileActions.currentFile = parent;
 		var actions = FileActions.get(FileActions.getCurrentMimeType(), FileActions.getCurrentType(), FileActions.getCurrentPermissions());
 		var file = FileActions.getCurrentFile();
+		var nameLinks;
 		if (FileList.findFileEl(file).data('renaming')) {
 			return;
 		}
 
 		// recreate fileactions
-		parent.children('a.name').find('.fileactions').remove();
-		parent.children('a.name').append('<span class="fileactions" />');
+		nameLinks = parent.children('a.name');
+		nameLinks.find('.fileactions, .nametext .action').remove();
+		nameLinks.append('<span class="fileactions" />');
 		var defaultAction = FileActions.getDefault(FileActions.getCurrentMimeType(), FileActions.getCurrentType(), FileActions.getCurrentPermissions());
 
 		var actionHandler = function (event) {
@@ -105,13 +107,19 @@ var FileActions = {
 				if (img) {
 					html += '<img class ="svg" src="' + img + '" /> ';
 				}
-				html += t('files', name) + '</a>';
-
-				var element = $(html);
-				element.data('action', name);
-				//alert(element);
-				element.on('click', {a: null, elem: parent, actionFunc: actions[name]}, actionHandler);
-				parent.find('a.name>span.fileactions').append(element);
+				if (name === 'Rename') {
+					html += '</a>';
+					var element = $(html);
+					element.data('action', name);
+					element.on('click', {a: null, elem: parent, actionFunc: actions[name]}, actionHandler);
+					parent.find('a.name>span.nametext').append(element);
+				} else {
+					html += t('files', name) + '</a>';
+					var element = $(html);
+					element.data('action', name);
+					element.on('click', {a: null, elem: parent, actionFunc: actions[name]}, actionHandler);
+					parent.find('a.name>span.fileactions').append(element);
+				}
 			}
 
 		};
