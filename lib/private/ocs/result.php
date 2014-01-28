@@ -49,7 +49,7 @@ class OC_OCS_Result{
 	public function setItemsPerPage(int $items) {
 		$this->perPage = $items;
 	}
-	
+
 	/**
 	 * get the status code
 	 * @return int
@@ -57,7 +57,7 @@ class OC_OCS_Result{
 	public function getStatusCode() {
 		return $this->statusCode;
 	}
-	
+
 	/**
 	 * get the meta data for the result
 	 * @return array
@@ -76,15 +76,21 @@ class OC_OCS_Result{
 		return $meta;
 
 	}
-	
+
 	/**
 	 * get the result data
-	 * @return array|string|int 
+	 * @return array
 	 */
 	public function getData() {
+		if ($this->data === null) {
+			return array();
+		} elseif (!is_array($this->data)) {
+			return array($this->data);
+		}
+
 		return $this->data;
 	}
-	
+
 	/**
 	 * return bool if the method succedded
 	 * @return bool
