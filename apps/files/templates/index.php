@@ -1,5 +1,4 @@
 <div id="controls">
-	<?php print_unescaped($_['breadcrumb']); ?>
 		<div class="actions creatable hidden">
 			<div id="new" class="button">
 				<a><?php p($l->t('New'));?></a>
