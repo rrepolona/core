@@ -1,4 +1,4 @@
-
+/* global OC, t, BreadCrumb, FileActions, FileList */
 $(document).ready(function() {
 
 	if (typeof FileActions !== 'undefined') {
@@ -183,10 +183,41 @@ $(document).ready(function() {
 				action(filename);
 			}
 		}
-
-		// event handlers for breadcrumb items
-		$('#controls').delegate('.crumb:not(.home) a', 'click', onClickBreadcrumb);
 	});
+
+	/**
+	 * Override crumb URL maker
+	 */
+	BreadCrumb.prototype._makeCrumbUrl = function(part, index) {
+		if (index === 0) {
+			return OC.linkTo('files', 'index.php');
+		}
+		return OC.linkTo('files_trashbin', 'index.php')+"?dir=" + encodeURIComponent(part.dir);
+	};
+
+	/**
+	 * Override crumb making to add "Deleted files" entry
+	 * and convert files with ".d" extensions to a more
+	 * user friendly name.
+	 */
+	var oldMakeCrumbs = BreadCrumb.prototype._makeCrumbs;
+	BreadCrumb.prototype._makeCrumbs = function() {
+		var parts = oldMakeCrumbs.apply(this, arguments);
+		var deletedRegExp = new RegExp(/^(.+)\.d[0-9]+$/);
+		// duplicate first part
+		parts.unshift(parts[0]);
+		parts[1] = {
+			dir: '/',
+			name: t('files_trashbin', 'Deleted files')
+		};
+		for (var i = 2; i < parts.length; i++) {
+			var match = deletedRegExp.exec(parts[i].name);
+			if (match && match.length > 1) {
+				parts[i].name = match[1];
+			}
+		}
+		return parts;
+	};
 
 	FileActions.actions.dir = {
 		// only keep 'Open' action for navigation
